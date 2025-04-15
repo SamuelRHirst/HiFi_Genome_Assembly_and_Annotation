@@ -347,7 +347,7 @@ Hifiasm generates accurate contigs, but the naming conventions (`ptgXXXXXl`) are
 
 ---
 
-### 🧱 8.1 Run `ragtag scaffold`
+### 🧱 7.1 Run `ragtag scaffold`
 
 ```bash
 ragtag.py scaffold reference.fasta input_assembly.fasta -o ragtag_output -t 32
@@ -375,7 +375,7 @@ ragtag.scaffold.nucmer.delta → MUMmer output
 
 The .agp file is especially useful — it describes which of your contigs map where, and in what order, along each reference chromosome.
 
-### 🏷️ 8.2 Rename Contigs Using Custom Script
+### 🏷️ 7.2 Rename Contigs Using Custom Script
 To make your assembly more readable, you can rename your contigs based on the .agp file output from RagTag.
 
 Use my script:
