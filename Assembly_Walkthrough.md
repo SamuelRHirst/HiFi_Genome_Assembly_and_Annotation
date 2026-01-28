@@ -1,11 +1,11 @@
-# 🚀 Assembly Walkthrough (HiFi Genomics)
+#  Assembly Walkthrough (HiFi Genomics)
 
-So you sent off your tissue or library to be sequenced and finally (hopefully not after too much waiting) have your PacBio HiFi files ready to go. Congrats! 🎉  
+So you sent off your tissue or library to be sequenced and finally (hopefully not after too much waiting) have your PacBio HiFi files ready to go. Congrats!   
 Now let’s turn those beautiful long reads into a genome.
 
 ---
 
-## 🛠️ Environment Setup: Miniconda is Your Best Friend
+##  Environment Setup: Miniconda is Your Best Friend
 
 Most of this pipeline is run on a supercomputer (HPC), and we highly recommend using **[Miniconda3](https://www.anaconda.com/docs/getting-started/miniconda/install)** to manage environments and tools.
 
@@ -18,7 +18,7 @@ To install Miniconda3, follow the [official instructions here](https://www.anaco
 
 ---
 
-## 📦 Assumptions
+##  Assumptions
 
 I’ll assume you already have access to an environment where conda works and that you can install tools via:
 
@@ -29,10 +29,10 @@ conda activate hifi_env
 ```
 For example
 
-## 📂 Step 1: Check Your File Format
+##  Step 1: Check Your File Format
 Your PacBio HiFi reads typically arrive in one of two formats:
 
-.fastq.gz → You're ready to go! 🎯
+.fastq.gz → You're ready to go! 
 
 .bam → You'll need to convert to .fastq.gz first.
 
@@ -46,20 +46,20 @@ sample_reads.subreads.fastq
 
 And, after compression: sample_reads.subreads.fastq.gz
 
-✅ Make sure you're working with HiFi (CCS) reads and not continuous long reads (CLR). If in doubt, ask your sequencing center or check the read lengths.
+ Make sure you're working with HiFi (CCS) reads and not continuous long reads (CLR). If in doubt, ask your sequencing center or check the read lengths.
 
-## 🔍 Step 2: Raw Read Quality Checks (Optional)
+##  Step 2: Raw Read Quality Checks (Optional)
 While PacBio HiFi reads are typically high-quality, it's still smart to run a few quality checks.
 
-### 🧪 2.1 Run FastQC
+###  2.1 Run FastQC
 ```bash
 fastqc sample_reads.subreads.fastq.gz
 ```
 This will generate an .html report that you can open in your browser.
 
-⚠️ Some warnings (e.g., about sequence length) are expected and can be ignored — FastQC is designed for Illumina reads.
+ Some warnings (e.g., about sequence length) are expected and can be ignored — FastQC is designed for Illumina reads.
 
-### 📊 2.2 View Stats with SeqKit
+###  2.2 View Stats with SeqKit
 ```bash
 seqkit stats sample_reads.subreads.fastq.gz
 ```
@@ -68,7 +68,7 @@ Example output:
 file                          format  type  num_seqs  sum_len   min_len  avg_len  max_len  gc%
 sample_reads.subreads.fastq.gz  FASTQ   DNA   150342    224506273  10500    14937    15624    42.8
 ```
-### 📈 2.3 Visualize with NanoPlot (Optional)
+###  2.3 Visualize with NanoPlot (Optional)
 ```bash
 NanoPlot --fastq sample_reads.subreads.fastq.gz -o nanoplot_output/
 ```
@@ -77,17 +77,17 @@ Read length distribution
 Quality scores
 Total base yield
 
-✅ Once your input data is confirmed and ready... it’s time to assemble.
+ Once your input data is confirmed and ready... it’s time to assemble.
 
-➡️ Go to Step 3 – Assembly with Hifiasm
+ Go to Step 3 – Assembly with Hifiasm
 
-## 🧱 Step 3: Assemble with Hifiasm
+##  Step 3: Assemble with Hifiasm
 
 Now that your HiFi reads are ready to go, it's time to assemble the genome using [`hifiasm`](https://github.com/chhylp123/hifiasm), a fast and accurate assembler designed for PacBio HiFi data.
 
 ---
 
-### 📥 Input
+###  Input
 
 Your input should be one or more `.fastq.gz` files containing HiFi reads.
 
@@ -97,7 +97,7 @@ You can provide multiple read files separated by spaces:
 hifiasm -o sample_output -t 32 reads1.fastq.gz reads2.fastq.gz
 ```
 
-🧬 Example Assembly Command
+ Example Assembly Command
 ```bash
 # Define your read file
 read1=/path/to/your/reads/sample1.hifi_reads.fastq.gz
@@ -113,7 +113,7 @@ Explanation:
 
 $read1: Input FASTQ file; you can also list multiple files directly.
 
-📄 What Does Hifiasm Output?
+ What Does Hifiasm Output?
 After successful assembly, hifiasm will output several files:
 ```bash
 example_output.asm.bp.p_ctg.gfa        # Primary contig graph file
@@ -124,29 +124,29 @@ example_output.asm.bp.p_ctg.gfa        # Primary contig graph file
 example_output.asm.bp.hap1.p_ctg.gfa   # Hap1 assembly (if phased)
 example_output.asm.bp.hap2.p_ctg.gfa   # Hap2 assembly (if phased)
 
-🔄 Convert GFA to FASTA with awk
+ Convert GFA to FASTA with awk
 To use your assembly downstream, you’ll want to convert the .gfa file(s) to .fasta. Here's how:
-📌 Primary Assembly to FASTA
+ Primary Assembly to FASTA
 ```bash
 awk '/^S/{print ">"$2"\n"$3}' example_output.asm.bp.p_ctg.gfa | fold > example_primary_assembly.fasta
 ```
-📌 Haplotype-resolved Assemblies to FASTA (if available)
+ Haplotype-resolved Assemblies to FASTA (if available)
 ```bash
 awk '/^S/{print ">"$2"\n"$3}' example_output.asm.bp.hap1.p_ctg.gfa | fold > example_hap1.fasta
 awk '/^S/{print ">"$2"\n"$3}' example_output.asm.bp.hap2.p_ctg.gfa | fold > example_hap2.fasta
 ```
 
-## 🧹 Step 4: (Optional) Purging Duplicates
+##  Step 4: (Optional) Purging Duplicates
 
 Some users opt to run `purge_dups` after assembly to remove potential haplotypic duplications or redundant contigs. However, **Hifiasm already performs its own internal purging**, so this step is **not always recommended**.
 
-> 💡 See this [Twitter thread by Heng Li](https://x.com/lh3lh3/status/1422917891675070468) (Hifiasm developer) explaining why **post-assembly purging may be unnecessary** and potentially harmful if applied blindly.
+>  See this [Twitter thread by Heng Li](https://x.com/lh3lh3/status/1422917891675070468) (Hifiasm developer) explaining why **post-assembly purging may be unnecessary** and potentially harmful if applied blindly.
 
 That said, if your **BUSCO duplication rate** is high (e.g., >2–5%) or you suspect unresolved haplotypic contigs, `purge_dups` can still be useful. Just proceed cautiously and back up your original assembly.
 
 ---
 
-### 📊 When Should You Use `purge_dups`?
+###  When Should You Use `purge_dups`?
 
 - If your genome shows **>2–5% duplicated BUSCOs**
 - If your genome is known to be **highly heterozygous**
@@ -154,14 +154,14 @@ That said, if your **BUSCO duplication rate** is high (e.g., >2–5%) or you sus
 
 ---
 
-📌 **Note:** If you do use `purge_dups`, the typical workflow involves:
+ **Note:** If you do use `purge_dups`, the typical workflow involves:
 
 1. Generating a read depth histogram
 2. Identifying cutoff thresholds
 3. Running the `purge_dups` commands
 
 
-## 🧼 Step 5: Adapter & Contamination Screening
+##  Step 5: Adapter & Contamination Screening
 
 After assembly, it's good practice to screen your genome for any leftover adapters or foreign contamination (e.g., vectors, microbial sequences, etc.). These can sneak into your data during library prep, sequencing, or assembly.
 
@@ -169,27 +169,27 @@ There are several tools available for this, but one of the best is **[NCBI FCS](
 
 ---
 
-### ⚠️ The Catch
+###  The Catch
 
 Setting up FCS on a cluster — downloading and configuring all the necessary **databases and dependencies** — can be a bit of a nightmare. It often requires a lot of time, system resources, and patience.
 
 ---
 
-### 🌐 A Better Way: Use Galaxy!
+###  A Better Way: Use Galaxy!
 
 [Galaxy](https://usegalaxy.org) is a free, web-based platform for accessible, reproducible bioinformatics. It hosts hundreds of tools and workflows and **comes pre-configured with all necessary databases** — including those used by FCS.
 
-You don’t have to install anything. Just upload your files and run the workflow in your browser. ✨
+You don’t have to install anything. Just upload your files and run the workflow in your browser. 
 
 ---
 
-### 🚀 Tutorial: Screen for Contamination with Galaxy + FCS
+###  Tutorial: Screen for Contamination with Galaxy + FCS
 
 Follow this excellent step-by-step tutorial from the Galaxy team:
 
-📚 [Galaxy Training: NCBI Foreign Contamination Screen](https://training.galaxyproject.org/training-material/topics/sequence-analysis/tutorials/ncbi-fcs/tutorial.html)
+ [Galaxy Training: NCBI Foreign Contamination Screen](https://training.galaxyproject.org/training-material/topics/sequence-analysis/tutorials/ncbi-fcs/tutorial.html)
 
-#### ✅ What You'll Do:
+####  What You'll Do:
 
 1. **Create a free account** at [usegalaxy.org](https://usegalaxy.org)
 2. Open the tutorial and click to **import the workflow**
@@ -199,15 +199,15 @@ Follow this excellent step-by-step tutorial from the Galaxy team:
 
 ---
 
-### 📄 Output
+###  Output
 
 The workflow will produce:
 - A contamination report
 - A cleaned version of your FASTA file (if contamination is detected)
 
-You can then download the cleaned FASTA and move forward with a tidy genome. 🧼
+You can then download the cleaned FASTA and move forward with a tidy genome. 
 
-## 📊 Step 6: Assembly Statistics
+##  Step 6: Assembly Statistics
 
 Before moving forward with annotation or scaffolding, it's important to evaluate the quality of your genome assembly. This includes:
 
@@ -218,19 +218,19 @@ Before moving forward with annotation or scaffolding, it's important to evaluate
 - Genome completeness
 
 ---
-### 🐍 6.1 Use a Custom Python Script
+###  6.1 Use a Custom Python Script
 
 You can use this Python script to generate quick summary stats (assembly size, N50, L50, etc.).
 
-📁 Available here:  
-👉 [`assembly_stats.py`](https://github.com/SamuelRHirst/Custom_Scripts/blob/main/assembly_stats.py)
+ Available here:  
+ [`assembly_stats.py`](https://github.com/SamuelRHirst/Custom_Scripts/blob/main/assembly_stats.py)
 
-#### ✅ Usage:
+####  Usage:
 
 ```bash
 python assembly_stats.py cleaned_assembly.fasta
 ```
-### 🧰 6.2 Other Tools You Can Use
+###  6.2 Other Tools You Can Use
 If you'd prefer established third-party tools, here are a few good options:
 
 🔹 seqkit (lightweight, fast)
@@ -252,10 +252,10 @@ GC%
 
 Misassemblies (if a reference is provided)
 
-### 🧬 6.3 Genome Completeness with BUSCO
+###  6.3 Genome Completeness with BUSCO
 BUSCO (Benchmarking Universal Single-Copy Orthologs) estimates how complete your genome is by searching for conserved orthologous genes.
 
-✅ Run BUSCO
+ Run BUSCO
 ```bash
 busco -i cleaned_assembly.fasta -l <lineage_dataset> -m genome -o busco_output -c 1
 ```
@@ -272,10 +272,10 @@ Where:
 
 -c: Number of threads
 
-✅ Be sure to choose the correct lineage dataset.
+ Be sure to choose the correct lineage dataset.
 For vertebrates, use: -l vertebrata_odb10
 
-📄 Example BUSCO Output
+ Example BUSCO Output
 You'll find a file like:
 
 ```bash
@@ -300,22 +300,22 @@ M = Missing
 
 n = Number of BUSCO groups searched
 
-🟢 A good assembly typically has ≥95% completeness and low duplication (< 2-5%)
+ A good assembly typically has ≥95% completeness and low duplication (< 2-5%)
 
-## 🧩 Step 7: Scaffolding & Renaming with RagTag
+##  Step 7: Scaffolding & Renaming with RagTag
 
 Once you've assembled and cleaned your genome, the contig names often look something like this:
 
 ptg000084l ptg000143l ptg000011l
 
 
-😐 Not exactly informative.
+ Not exactly informative.
 
 This is where **[RagTag](https://github.com/malonge/RagTag)** comes in.
 
 ---
 
-### 📌 What is RagTag?
+###  What is RagTag?
 
 RagTag is a versatile toolkit used for **genome scaffolding, patching, and reference-guided assembly improvement**. It allows you to:
 - Scaffold contigs based on a closely related reference genome
@@ -325,20 +325,20 @@ RagTag is a versatile toolkit used for **genome scaffolding, patching, and refer
 
 ---
 
-### 🧠 Why Use RagTag?
+###  Why Use RagTag?
 
 Hifiasm generates accurate contigs, but the naming conventions (`ptgXXXXXl`) are generic and uninformative. If you have a **closely related reference genome**, you can use RagTag to:
 - **Rename** your contigs based on where they map to that reference
 - **Reorder** and scaffold them to match chromosomal layout
 - Provide **biological context** to your genome — e.g., contig `Chr_3_12` is the 12th chunk mapping to Chromosome 3
 
-> 🔍 Even if your mapping isn't perfect, it's still helpful to get a **relative sense of contig order and structure**.
+>  Even if your mapping isn't perfect, it's still helpful to get a **relative sense of contig order and structure**.
 
-> ⚠️ If you have **Hi-C data** and have already generated a **chromosome-level reference genome**, you do not need RagTag for renaming — you'd likely use a Hi-C-based scaffolder like `3D-DNA` or `SALSA` instead. That's a whole different thing I haven't gone over in this tutorial (but plan to eventually add). 
+>  If you have **Hi-C data** and have already generated a **chromosome-level reference genome**, you do not need RagTag for renaming — you'd likely use a Hi-C-based scaffolder like `3D-DNA` or `SALSA` instead. That's a whole different thing I haven't gone over in this tutorial (but plan to eventually add). 
 
 ---
 
-### 🛠️ What You Can Do With RagTag
+###  What You Can Do With RagTag
 
 - Rename contigs to match chromosome structure of a related species
 - Scaffold fragmented contigs into pseudomolecules
@@ -347,7 +347,7 @@ Hifiasm generates accurate contigs, but the naming conventions (`ptgXXXXXl`) are
 
 ---
 
-### 🧱 7.1 Run `ragtag scaffold`
+###  7.1 Run `ragtag scaffold`
 
 ```bash
 ragtag.py scaffold reference.fasta input_assembly.fasta -o ragtag_output -t 32
@@ -362,7 +362,7 @@ input_assembly.fasta: Your cleaned HiFi assembly
 
 -t 32: Number of threads (adjust as needed)
 
-📁 What RagTag Produces
+ What RagTag Produces
 Inside the ragtag_output/ folder, you’ll find:
 
 ragtag.scaffold.fasta → The reordered/scaffolded assembly
@@ -375,13 +375,13 @@ ragtag.scaffold.nucmer.delta → MUMmer output
 
 The .agp file is especially useful — it describes which of your contigs map where, and in what order, along each reference chromosome.
 
-### 🏷️ 7.2 Rename Contigs Using Custom Script
+###  7.2 Rename Contigs Using Custom Script
 To make your assembly more readable, you can rename your contigs based on the .agp file output from RagTag.
 
 Use my script:
 
-📁  Available here:  
-👉 [`rename_contigs.py`](https://github.com/SamuelRHirst/Custom_Scripts/blob/main/rename_contigs.py)
+  Available here:  
+ [`rename_contigs.py`](https://github.com/SamuelRHirst/Custom_Scripts/blob/main/rename_contigs.py)
 
 ```bash
 python rename_contigs.py ragtag_output/ragtag.scaffold.agp input_assembly.fasta renamed_assembly.fasta
