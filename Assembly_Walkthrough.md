@@ -10,8 +10,7 @@ Now let’s turn those beautiful long reads into a genome.
 Most of this pipeline is run on a supercomputer (HPC), and we highly recommend using **[Miniconda3](https://www.anaconda.com/docs/getting-started/miniconda/install)** to manage environments and tools.
 
 Why Miniconda?
-
-> Because juggling bioinformatics software is like herding cats — and conda is the cat whisperer. 🐱  
+  
 > It handles versions, dependencies, and environments so you don’t scream into the void every time something breaks.
 
 To install Miniconda3, follow the [official instructions here](https://www.anaconda.com/docs/getting-started/miniconda/install), or ask your HPC support if it's already installed. Most clusters have it available as a module or pre-installed in user space.
