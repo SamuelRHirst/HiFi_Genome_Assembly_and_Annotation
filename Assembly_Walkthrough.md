@@ -11,9 +11,9 @@ Most of this pipeline is run on a supercomputer (HPC; SLURM), and I highly recom
 
 Why Miniconda?
   
-> It handles versions, dependencies, and environments so you don’t scream into the void every time something breaks.
+> It handles versions, dependencies, and environments. Intalling programs from source is a complex and frustrating process. 
 
-To install Miniconda3, follow the [official instructions here](https://www.anaconda.com/docs/getting-started/miniconda/install), or ask your HPC support if it's already installed. Most clusters have it available as a module or pre-installed in user space.
+To install Miniconda3, follow the [official instructions here](https://www.anaconda.com/docs/getting-started/miniconda/install), or check if your HPC support if it's already installed. Many clusters have it available as a module or pre-installed in user space.
 
 ---
 
@@ -82,7 +82,7 @@ Total base yield
 
 ##  Step 3: Assemble with Hifiasm
 
-Now that your HiFi reads are ready to go, it's time to assemble the genome using [`hifiasm`](https://github.com/chhylp123/hifiasm), a fast and accurate assembler designed for PacBio HiFi data.
+Now that your HiFi reads are ready to go, it's time to assemble the genome using [`hifiasm`](https://github.com/chhylp123/hifiasm), a fast and accurate assembler designed for PacBio HiFi data. There are other HiFi assembly softwares available and you can try those. But currently, Hifiasm does the best. 
 
 ---
 
@@ -178,7 +178,7 @@ Setting up FCS on a cluster — downloading and configuring all the necessary **
 
 [Galaxy](https://usegalaxy.org) is a free, web-based platform for accessible, reproducible bioinformatics. It hosts hundreds of tools and workflows and **comes pre-configured with all necessary databases** — including those used by FCS.
 
-You don’t have to install anything. Just upload your files and run the workflow in your browser. 
+You don’t have to install anything. Just upload your files and run the workflow in your browser. The upload and running process can take a while, but can be worth not dealing with the headache of locally installing NCBI FCS locally.
 
 ---
 
