@@ -1,4 +1,4 @@
-# 🧬 HiFi Genomics Pipeline
+#  HiFi Genomics Pipeline
 
 This repository contains tools, notes, and walkthroughs for genome assembly using **PacBio HiFi reads**.
 
