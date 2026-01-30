@@ -395,4 +395,4 @@ Third: Output filename for the renamed FASTA
 
 This will create a new FASTA file where each contig is renamed to reflect its mapping location and order — e.g., Chr_3_12 = 12th contig on Chromosome 3.
 
-✅ Now you have a biologically meaningful, scaffolded, and renamed genome assembly — ready for annotation, submission, or visualization.
+Now you have a biologically meaningful, scaffolded, and renamed genome assembly — ready for annotation, submission, or visualization.
