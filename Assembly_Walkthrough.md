@@ -7,7 +7,7 @@ Now let’s turn those beautiful long reads into a genome.
 
 ##  Environment Setup: Miniconda is Your Best Friend
 
-Most of this pipeline is run on a supercomputer (HPC), and we highly recommend using **[Miniconda3](https://www.anaconda.com/docs/getting-started/miniconda/install)** to manage environments and tools.
+Most of this pipeline is run on a supercomputer (HPC; SLURM), and I highly recommend using **[Miniconda3](https://www.anaconda.com/docs/getting-started/miniconda/install)** to manage environments and tools.
 
 Why Miniconda?
   
